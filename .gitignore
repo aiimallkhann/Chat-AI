@@ -2,3 +2,8 @@
 __pycache__/
 *.pyc
 .env
+*.txt
+*.pdf
+*.docx
+*.xlsx
+*.pptx
