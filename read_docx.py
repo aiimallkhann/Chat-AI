@@ -18,11 +18,22 @@ def read_docx(file_path, max_pages=None):
     
     content = []
     
-    for p in doc.paragraph:
+    for p in doc.paragraphs:
         cleaned_text = clean_text(p.text)
-        if cleaned_text is not None:
-            return content.append(cleaned_text)
-        for tables in doc.tables:
-            for rows in tables.rows:
-                
-        
+        if cleaned_text:
+            content.append(cleaned_text)
+    for t in doc.tables:
+        for r in t.rows:
+            row_data = [clean_text(cell.text) for cell in r.cells if cell.text.strip()]
+            if row_data:
+                joined_row = ' | '.join(row_data)
+                content.append(joined_row)
+    return '\n\n'.join(content).strip()
+if __name__ == '__main__':
+    text = read_docx(r'D:\Studies\Software\SOFTWARE NOTES.docx')
+    Path('docx_output.txt').write_text(text, encoding='utf-8')
+    
+    chunks = chunk_text(text)
+    if chunks:
+        print(chunks[0])
+        print(chunks[len(chunks) // 2])
