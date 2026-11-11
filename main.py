@@ -4,12 +4,13 @@ import numpy as np
 
 from read_pdf import read_pdf
 from read_docx import read_docx
-from read_txt import read_text, chunk_text
+from read_text import read_text, chunk_text
 from embedder import get_embedding
-from vector import cosine_similarity
-from generator import build_prompt, generator
+from math_logic import cosine_similarity
+from llm import build_prompt, generator
+from file_saver import save_text
 
-def load_document(file_path):
+def load_document(file_path, should_save):
     path = Path(file_path)
     ext = path.suffix.lower()
     
@@ -22,14 +23,20 @@ def load_document(file_path):
     else:
         raise ValueError(f"Unsupported file format: {ext}")
         
+    if should_save:
+        save_text(file_path, text)
+        
     return chunk_text(text)
 
 def main():
     print("ChatAI - Local RAG Assistant")
     file_path = input("Enter document path: ").strip()
+    save_input = input("Save extracted text to docs/ folder? (y/n): ").strip().lower()
+    
+    should_save = save_input == 'y'
     
     try:
-        chunks = load_document(file_path)
+        chunks = load_document(file_path, should_save)
     except Exception as e:
         print(f"Error loading document: {e}")
         sys.exit(1)
